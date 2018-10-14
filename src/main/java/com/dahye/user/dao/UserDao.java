@@ -2,8 +2,6 @@ package com.dahye.user.dao;
 
 import com.dahye.user.domain.User;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import javax.sql.DataSource;
@@ -15,11 +13,6 @@ import java.sql.SQLException;
 public class UserDao {
 
     private DataSource dataSource;
-    private ConnectionMaker connectionMaker;
-
-    public void setConnectionMaker(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
-    }
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -69,7 +62,7 @@ public class UserDao {
         UserDao dao = context.getBean("userDao", UserDao.class);
 
         User user = new User();
-        user.setId("dahyekim14");
+        user.setId("dahyekim16");
         user.setName("김다혜");
         user.setPassword("dahye");
 
