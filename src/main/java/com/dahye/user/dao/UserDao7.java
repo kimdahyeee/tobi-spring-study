@@ -1,4 +1,4 @@
-package com.dahye.dao;
+package com.dahye.user.dao;
 
 import com.dahye.user.domain.User;
 
@@ -7,23 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
+public class UserDao7 {
 
     private ConnectionMaker connectionMaker;
 
-    //의존 관계 주입
-    public UserDao() {
-//        DaoFactory1 daoFactory = new DaoFactory1();
-//        this.connectionMaker = daoFactory.connectionMaker();
-
-        //애플리케이션 컨텍스트 이용
-//        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory1.class);
-//        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
-
-//        this.connectionMaker = connectionMaker;
-    }
-
-    public void setConnectionMaker(ConnectionMaker connectionMaker) {
+    public UserDao7(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 
@@ -66,14 +54,24 @@ public class UserDao {
         return user;
     }
 
-//    private Connection getConnection() throws ClassNotFoundException, SQLException {
-//        Class.forName("com.jdbc.driver.OracleDriver");
-//        Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/dahye:orcl", "dahye", "dahye");
-//
-//        return c;
-//    }
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //의존 설정을 userDaoFactory로 바꾼다.
+        //메인 메서드는 오직 테스트만을 수행하도록 변경됨.
+        UserDao7 dao = new DaoFactory1().userDao7();
 
-    // 해당 메소드의 구현은 서브클래스가 담당
-    // 템플릿 메소드 패턴
-//    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
+        User user = new User();
+        user.setId("dahyekim12");
+        user.setName("김다혜");
+        user.setPassword("dahye");
+
+        dao.add(user);
+
+        System.out.println(user.getId() +" 등록 성공");
+
+        User user2 = dao.get(user.getId());
+        System.out.println(user2.getName());
+        System.out.println(user2.getPassword());
+
+        System.out.println(user2.getId() + " 조회 성공");
+    }
 }

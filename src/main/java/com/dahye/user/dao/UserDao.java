@@ -1,7 +1,12 @@
-package com.dahye.dao;
+package com.dahye.user.dao;
 
 import com.dahye.user.domain.User;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,26 +14,19 @@ import java.sql.SQLException;
 
 public class UserDao {
 
+    private DataSource dataSource;
     private ConnectionMaker connectionMaker;
-
-    //의존 관계 주입
-    public UserDao() {
-//        DaoFactory1 daoFactory = new DaoFactory1();
-//        this.connectionMaker = daoFactory.connectionMaker();
-
-        //애플리케이션 컨텍스트 이용
-//        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory1.class);
-//        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
-
-//        this.connectionMaker = connectionMaker;
-    }
 
     public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id, name, password) values(?,?,?)"
@@ -44,7 +42,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?"
@@ -66,14 +64,23 @@ public class UserDao {
         return user;
     }
 
-//    private Connection getConnection() throws ClassNotFoundException, SQLException {
-//        Class.forName("com.jdbc.driver.OracleDriver");
-//        Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/dahye:orcl", "dahye", "dahye");
-//
-//        return c;
-//    }
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        ApplicationContext context = new GenericXmlApplicationContext("classpath:applicationContext-*.xml");
+        UserDao dao = context.getBean("userDao", UserDao.class);
 
-    // 해당 메소드의 구현은 서브클래스가 담당
-    // 템플릿 메소드 패턴
-//    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
+        User user = new User();
+        user.setId("dahyekim14");
+        user.setName("김다혜");
+        user.setPassword("dahye");
+
+        dao.add(user);
+
+        System.out.println(user.getId() +" 등록 성공");
+
+        User user2 = dao.get(user.getId());
+        System.out.println(user2.getName());
+        System.out.println(user2.getPassword());
+
+        System.out.println(user2.getId() + " 조회 성공");
+    }
 }

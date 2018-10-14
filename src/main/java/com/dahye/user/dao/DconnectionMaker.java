@@ -1,4 +1,4 @@
-package com.dahye.dao;
+package com.dahye.user.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,8 +7,8 @@ import java.sql.SQLException;
 public class DconnectionMaker implements ConnectionMaker {
 
     public Connection makeConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.jdbc.driver.OracleDriver");
-        Connection c = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/dahye:orcl", "dahye", "dahye");
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Connection c = DriverManager.getConnection("jdbc:oracle:thin:@172.30.1.24:1521:orcl", "dahye", "dahye");
 
         return c;
     }

@@ -1,4 +1,4 @@
-package com.dahye.domain;
+package com.dahye.user.domain;
 
 public class User {
     String id;
