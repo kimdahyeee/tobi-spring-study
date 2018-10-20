@@ -6,10 +6,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDao {
 
@@ -63,14 +60,18 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
+        StatementStrategy statementStrategy = new DeleteAllStatement();
+        jdbcContextWithStatementStrategy(statementStrategy);
+    }
+
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
 
         try {
             c = dataSource.getConnection();
 
-            StatementStrategy statementStrategy = new DeleteAllStatement();
-            ps = statementStrategy.makePreparedStatement(c);
+            ps = stmt.makePreparedStatement(c);
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -90,13 +91,6 @@ public class UserDao {
                 }
             }
         }
-    }
-
-    private PreparedStatement makeStatement(Connection c) throws SQLException {
-        PreparedStatement ps;
-        ps = c.prepareStatement("delete from users");
-
-        return ps;
     }
 
     public int getCount() throws SQLException {
