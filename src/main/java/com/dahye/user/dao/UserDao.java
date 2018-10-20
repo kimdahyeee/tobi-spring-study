@@ -14,11 +14,9 @@ public class UserDao {
 
     private JdbcContext jdbcContext;
 
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
-    }
-
     public void setDataSource(DataSource dataSource) {
+        this.jdbcContext = new JdbcContext();
+        this.jdbcContext.setDataSource(dataSource);
         this.dataSource = dataSource;
     }
 
@@ -66,13 +64,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        //내부 클래스로 변환
-        this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("delete from users");
-                return ps;
-            }
-        });
+        this.jdbcContext.executeSql("delete from users");
     }
 
     public int getCount() throws SQLException {
