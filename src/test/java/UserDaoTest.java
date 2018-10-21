@@ -82,7 +82,7 @@ public class UserDaoTest {
 
         List<User> users = dao.getAll();
         assertThat(users.size(), is(0));
-        
+
         dao.add(user);
         List<User> users1 = dao.getAll();
         assertThat(users1.size(), is(1));

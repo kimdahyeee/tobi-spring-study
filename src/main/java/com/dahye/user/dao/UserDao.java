@@ -11,13 +11,21 @@ import java.util.List;
 
 public class UserDao {
 
-    private DataSource dataSource;
+    private RowMapper<User> userMapper =
+            new RowMapper<User>() {
+                public User mapRow(ResultSet resultSet, int i) throws SQLException {
+                    User user = new User();
+                    user.setId(resultSet.getString("id"));
+                    user.setName(resultSet.getString("name"));
+                    user.setPassword(resultSet.getString("password"));
+                    return user;
+                }
+            };
 
     private JdbcTemplate jdbcTemplate;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.dataSource = dataSource;
     }
 
     public void add(final User user) {
@@ -28,28 +36,12 @@ public class UserDao {
     public User get(String id) {
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
                     new Object[]{id},
-                    new RowMapper<User>() {
-                        public User mapRow(ResultSet resultSet, int i) throws SQLException {
-                            User user = new User();
-                            user.setId(resultSet.getString("id"));
-                            user.setName(resultSet.getString("name"));
-                            user.setPassword(resultSet.getString("password"));
-                            return user;
-                        }
-                });
+                    this.userMapper);
     }
 
     public List<User> getAll() {
         return this.jdbcTemplate.query("select * from users order by id",
-                new RowMapper<User>() {
-                    public User mapRow(ResultSet resultSet, int i) throws SQLException {
-                        User user = new User();
-                        user.setId(resultSet.getString("id"));
-                        user.setName(resultSet.getString("name"));
-                        user.setPassword(resultSet.getString("password"));
-                        return user;
-                    }
-                });
+                this.userMapper);
     }
 
     public void deleteAll() {
