@@ -17,6 +17,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import static com.dahye.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
+import static com.dahye.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext-*.xml")
 public class UserServiceTest {
@@ -32,11 +35,11 @@ public class UserServiceTest {
     @Before
     public void setUp() {
         users = Arrays.asList(
-                new User("dahye1", "김다혜1", "p1", Grade.BASIC, 49, 0),
-                new User("dahye2", "김다혜2", "p2", Grade.BASIC, 50, 0),
-                new User("dahye3", "김다혜3", "p3", Grade.SILVER, 60, 29),
-                new User("dahye4", "김다혜4", "p4", Grade.SILVER, 60, 30),
-                new User("dahye5", "김다혜5", "p5", Grade.GOLD, 100, 100)
+                new User("dahye1", "김다혜1", "p1", Grade.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
+                new User("dahye2", "김다혜2", "p2", Grade.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
+                new User("dahye3", "김다혜3", "p3", Grade.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1),
+                new User("dahye4", "김다혜4", "p4", Grade.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
+                new User("dahye5", "김다혜5", "p5", Grade.GOLD, 100, Integer.MAX_VALUE)
         );
     }
 
@@ -48,16 +51,20 @@ public class UserServiceTest {
 
         userService.upgradeGrades();
 
-        checkGrade(users.get(0), Grade.BASIC);
-        checkGrade(users.get(1), Grade.SILVER);
-        checkGrade(users.get(2), Grade.SILVER);
-        checkGrade(users.get(3), Grade.GOLD);
-        checkGrade(users.get(4), Grade.GOLD);
+        checkGradeUpgrade(users.get(0), false);
+        checkGradeUpgrade(users.get(1), true);
+        checkGradeUpgrade(users.get(2), false);
+        checkGradeUpgrade(users.get(3), true);
+        checkGradeUpgrade(users.get(4), false);
     }
 
-    private void checkGrade(User user, Grade expectedGrade) {
+    private void checkGradeUpgrade(User user, boolean changed) {
         User userUpdate = userDao.get(user.getId());
-        assertThat(userUpdate.getGrade(), is(expectedGrade));
+        if (changed) {
+            assertThat(userUpdate.getGrade(), is(user.getGrade().nextGrade()));
+        } else {
+            assertThat(userUpdate.getGrade(), is(user.getGrade()));
+        }
     }
 
     @Test
