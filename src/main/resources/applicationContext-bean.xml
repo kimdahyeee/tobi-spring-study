@@ -10,9 +10,13 @@
         <property name="password" value="dahye" />
     </bean>
 
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
     <bean id="userService" class="com.dahye.user.service.UserService">
         <property name="userDao" ref="userDao" />
-        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
     </bean>
 
     <bean id="userDao" class="com.dahye.user.dao.UserDaoJdbc">
