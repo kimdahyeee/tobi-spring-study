@@ -11,11 +11,11 @@ import javax.sql.DataSource;
 public class DaoFactory {
 
     @Bean //오브젝트 생성을 담당하는 ioc용 메서드라는 표시
-    public UserDao userDao() {
-        UserDao userDao = new UserDao();
-        userDao.setDataSource(dataSource());
+    public UserDaoJdbc userDao() {
+        UserDaoJdbc userDaoJdbc = new UserDaoJdbc();
+        userDaoJdbc.setDataSource(dataSource());
 
-        return userDao;
+        return userDaoJdbc;
     }
 
     @Bean

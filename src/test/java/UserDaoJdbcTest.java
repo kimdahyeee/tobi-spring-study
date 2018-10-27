@@ -1,9 +1,11 @@
 import com.dahye.user.dao.UserDao;
+import com.dahye.user.dao.UserDaoJdbc;
 import com.dahye.user.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,7 +18,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext-*.xml")
-public class UserDaoTest {
+public class UserDaoJdbcTest {
 
 //    @Autowired
 //    private ApplicationContext context;
@@ -106,5 +108,13 @@ public class UserDaoTest {
         assertThat(user1.getId(), is(user2.getId()));
         assertThat(user1.getName(), is(user2.getName()));
         assertThat(user1.getPassword(), is(user2.getPassword()));
+    }
+
+    @Test(expected = DataAccessException.class)
+    public void duplicateKey() {
+        dao.deleteAll();
+
+        dao.add(user);
+        dao.add(user);
     }
 }
