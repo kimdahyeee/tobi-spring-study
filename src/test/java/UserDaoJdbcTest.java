@@ -1,5 +1,4 @@
 import com.dahye.user.dao.UserDao;
-import com.dahye.user.dao.UserDaoJdbc;
 import com.dahye.user.domain.Grade;
 import com.dahye.user.domain.User;
 import org.junit.Before;
@@ -30,9 +29,9 @@ public class UserDaoJdbcTest {
 
     @Before
     public void setup() {
-        this.user = new User("dahyekim", "김다혜", "dahye", Grade.BASIC, 1, 0);
-        this.user2 = new User("dahyekim1", "김다혜", "dahye", Grade.SILVER, 55, 10);
-        this.user3 = new User("dahyekim3", "김다혜", "dahye", Grade.GOLD, 100, 40);
+        this.user = new User("dahyekim", "김다혜", "dahye", Grade.BASIC, 1, 0, "dahye1@dahye.com");
+        this.user2 = new User("dahyekim1", "김다혜", "dahye", Grade.SILVER, 55, 10, "dahye2@dahye.com");
+        this.user3 = new User("dahyekim3", "김다혜", "dahye", Grade.GOLD, 100, 40, "dahye3@dahye.com");
     }
 
     @Test
@@ -107,6 +106,7 @@ public class UserDaoJdbcTest {
         assertThat(user1.getGrade(), is(user2.getGrade()));
         assertThat(user1.getLoin(), is(user2.getLoin()));
         assertThat(user1.getRecommend(), is(user2.getRecommend()));
+        assertThat(user1.getEmail(), is(user2.getEmail()));
     }
 
     @Test(expected = DataAccessException.class)

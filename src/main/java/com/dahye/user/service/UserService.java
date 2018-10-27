@@ -1,23 +1,15 @@
 package com.dahye.user.service;
 
+import com.dahye.main.MailSender;
 import com.dahye.user.dao.UserDao;
 import com.dahye.user.domain.Grade;
 import com.dahye.user.domain.User;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Properties;
 
 public class UserService {
 
@@ -28,12 +20,18 @@ public class UserService {
 
     private PlatformTransactionManager transactionManager;
 
+    private MailSender mailSender;
+
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
+    }
+
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
     }
 
     public void upgradeGrades() throws Exception {
@@ -77,25 +75,12 @@ public class UserService {
     }
 
     private void sendEmail(User user) {
-        Properties props = new Properties();
-        props.put("main.smtp.host", "main.ksug.org");
-        Session s = Session.getInstance(props);
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("dahyekim@dahye.com");
+        mailMessage.setSubject("upgrade 안내");
+        mailMessage.setText("사용자의 등급이 " + user.getGrade().name() + "로 업그레이드");
 
-        MimeMessage message = new MimeMessage(s);
-
-        try {
-            message.setFrom(new InternetAddress("dahyekim@dahye.com"));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
-            message.setSubject("upgrade 안내");
-            message.setText("사용자의 등급이 " + user.getGrade().name() + "로 업그레이드");
-
-            Transport.send(message);
-        } catch (AddressException e) {
-            throw new RuntimeException(e);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        this.mailSender.send(mailMessage);
     }
 }

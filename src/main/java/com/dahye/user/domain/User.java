@@ -9,13 +9,14 @@ public class User {
     int recommend;
     String email;
 
-    public User(String id, String name, String password, Grade grade, int loin, int recommend) {
+    public User(String id, String name, String password, Grade grade, int loin, int recommend, String email) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.grade = grade;
         this.loin = loin;
         this.recommend = recommend;
+        this.email = email;
     }
 
     public User() {
