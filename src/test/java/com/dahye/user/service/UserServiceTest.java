@@ -17,8 +17,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import static com.dahye.user.service.UserGradeUpgradeService.MIN_LOGCOUNT_FOR_SILVER;
-import static com.dahye.user.service.UserGradeUpgradeService.MIN_RECOMMEND_FOR_GOLD;
+import static com.dahye.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
+import static com.dahye.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext-*.xml")

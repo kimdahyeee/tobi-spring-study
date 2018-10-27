@@ -8,24 +8,21 @@ import java.util.List;
 
 public class UserService {
 
-    UserDao userDao;
+    public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
+    public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 
-    UserGradeUpgradePolicy userGradeUpgradeService;
+    UserDao userDao;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
-    }
-
-    public void setUserGradeUpgradeService(UserGradeUpgradePolicy userGradeUpgradeService) {
-        this.userGradeUpgradeService = userGradeUpgradeService;
     }
 
     public void upgradeGrades() {
         List<User> users = userDao.getAll();
 
         for (User user : users) {
-            if(userGradeUpgradeService.canUpgradeGrade(user)) {
-                userGradeUpgradeService.upgradeGrade(user);
+            if(canUpgradeGrade(user)) {
+                upgradeGrade(user);
             }
         }
     }
@@ -33,5 +30,20 @@ public class UserService {
     public void add(User user) {
         if(user.getGrade() == null) user.setGrade(Grade.BASIC);
         userDao.add(user);
+    }
+
+    private boolean canUpgradeGrade(User user) {
+        Grade currentGrade = user.getGrade();
+        switch (currentGrade) {
+            case BASIC: return (user.getLoin() >= MIN_LOGCOUNT_FOR_SILVER);
+            case SILVER: return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
+            case GOLD: return false;
+            default: throw  new IllegalArgumentException("unknown level : " + currentGrade);
+        }
+    }
+
+    private void upgradeGrade(User user) {
+        user.upgradeGrade();
+        userDao.update(user);
     }
 }

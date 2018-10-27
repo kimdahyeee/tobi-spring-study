@@ -10,13 +10,8 @@
         <property name="password" value="dahye" />
     </bean>
 
-    <bean id="userGradeUpgradeService" class="com.dahye.user.service.UserGradeUpgradeService">
-        <property name="userDao" ref="userDao" />
-    </bean>
-
     <bean id="userService" class="com.dahye.user.service.UserService">
         <property name="userDao" ref="userDao" />
-        <property name="userGradeUpgradeService" ref="userGradeUpgradeService" />
     </bean>
 
     <bean id="userDao" class="com.dahye.user.dao.UserDaoJdbc">
