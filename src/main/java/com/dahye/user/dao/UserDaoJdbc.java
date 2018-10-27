@@ -1,5 +1,6 @@
 package com.dahye.user.dao;
 
+import com.dahye.user.domain.Grade;
 import com.dahye.user.domain.User;
 import com.dahye.user.exception.DuplicateUserIdException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +20,9 @@ public class UserDaoJdbc implements UserDao {
                     user.setId(resultSet.getString("id"));
                     user.setName(resultSet.getString("name"));
                     user.setPassword(resultSet.getString("password"));
+                    user.setGrade(Grade.valueOf(resultSet.getInt("grade")));
+                    user.setLoin(resultSet.getInt("login"));
+                    user.setRecommend(resultSet.getInt("recommend"));
                     return user;
                 }
             };
@@ -30,8 +34,8 @@ public class UserDaoJdbc implements UserDao {
     }
 
     public void add(final User user) {
-        this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)",
-                user.getId(), user.getName(), user.getPassword());
+        this.jdbcTemplate.update("insert into users(id, name, password, grade, login, recommend) values (?,?,?,?,?,?)",
+                user.getId(), user.getName(), user.getPassword(), user.getGrade().intValue(), user.getLoin(), user.getRecommend());
     }
 
     public User get(String id) {
@@ -51,5 +55,12 @@ public class UserDaoJdbc implements UserDao {
 
     public int getCount() {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+    }
+
+    public void update(User user) {
+        this.jdbcTemplate.update(
+                "update users set name = ?, password = ?, grade = ?, login = ?," +
+                    "recommend = ? where id = ? ", user.getName(), user.getPassword(), user.getGrade().intValue(),
+                    user.getLoin(), user.getRecommend(), user.getId());
     }
 }

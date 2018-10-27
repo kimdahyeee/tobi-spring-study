@@ -4,11 +4,17 @@ public class User {
     String id;
     String name;
     String password;
+    Grade grade;
+    int loin;
+    int recommend;
 
-    public User(String id, String name, String password) {
+    public User(String id, String name, String password, Grade grade, int loin, int recommend) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.grade = grade;
+        this.loin = loin;
+        this.recommend = recommend;
     }
 
     public User() {
@@ -37,5 +43,29 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
+
+    public int getLoin() {
+        return loin;
+    }
+
+    public void setLoin(int loin) {
+        this.loin = loin;
+    }
+
+    public int getRecommend() {
+        return recommend;
+    }
+
+    public void setRecommend(int recommend) {
+        this.recommend = recommend;
     }
 }
