@@ -3,7 +3,11 @@ package com.dahye.user.service;
 import com.dahye.user.dao.UserDao;
 import com.dahye.user.domain.Grade;
 import com.dahye.user.domain.User;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.List;
 
 public class UserService {
@@ -13,17 +17,38 @@ public class UserService {
 
     UserDao userDao;
 
+    private DataSource dataSource;
+
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    public void upgradeGrades() {
-        List<User> users = userDao.getAll();
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-        for (User user : users) {
-            if(canUpgradeGrade(user)) {
-                upgradeGrade(user);
+    public void upgradeGrades() throws Exception {
+        TransactionSynchronizationManager.initSynchronization();
+        Connection c = DataSourceUtils.getConnection(dataSource);
+        c.setAutoCommit(false);
+
+        try {
+            List<User> users = userDao.getAll();
+
+            for (User user : users) {
+                if(canUpgradeGrade(user)) {
+                    upgradeGrade(user);
+                }
             }
+
+            c.commit();
+        } catch (Exception e) {
+            c.rollback();
+            throw e;
+        } finally {
+            DataSourceUtils.releaseConnection(c, dataSource);
+            TransactionSynchronizationManager.unbindResource(this.dataSource);
+            TransactionSynchronizationManager.clearSynchronization();
         }
     }
 
@@ -42,7 +67,7 @@ public class UserService {
         }
     }
 
-    private void upgradeGrade(User user) {
+    protected void upgradeGrade(User user) {
         user.upgradeGrade();
         userDao.update(user);
     }

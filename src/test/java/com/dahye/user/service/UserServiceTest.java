@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -30,7 +32,27 @@ public class UserServiceTest {
     @Autowired
     UserDao userDao;
 
+    @Autowired
+    DataSource dataSource;
+
     List<User> users;
+
+    static class TestUserService extends UserService {
+        private String id;
+
+        private TestUserService(String id) {
+            this.id = id;
+        }
+
+        protected void upgradeGrade(User user) {
+            if(user.getId().equals(this.id)) throw new TestUserServiceException();
+            super.upgradeGrade(user);
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException {
+
+    }
 
     @Before
     public void setUp() {
@@ -44,7 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void upgradeGrade() {
+    public void upgradeGrade() throws Exception {
         userDao.deleteAll();
 
         for(User user : users) userDao.add(user);
@@ -83,5 +105,23 @@ public class UserServiceTest {
 
         assertThat(userWithGradeRead.getGrade(), is(userWithGrade.getGrade()));
         assertThat(userWithoutGradeRead.getGrade(), is(Grade.BASIC));
+    }
+
+    @Test
+    public void upgradeAllOrNothing() throws Exception {
+        UserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userDao);
+        testUserService.setDataSource(this.dataSource);
+        userDao.deleteAll();
+        for(User user : users) userDao.add(user);
+
+        try {
+            testUserService.upgradeGrades();
+            fail("TestUserServiceException expected");
+        } catch (TestUserServiceException e) {
+
+        }
+
+        checkGradeUpgrade(users.get(1), false);
     }
 }
