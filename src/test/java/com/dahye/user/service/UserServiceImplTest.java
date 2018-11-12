@@ -19,18 +19,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.dahye.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static com.dahye.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static com.dahye.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static com.dahye.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext-*.xml")
-public class UserServiceTest {
+public class UserServiceImplTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserServiceImpl userServiceImpl;
 
     @Autowired
     UserDao userDao;
@@ -43,10 +46,10 @@ public class UserServiceTest {
 
     List<User> users;
 
-    static class TestUserService extends UserService {
+    static class TestUserServiceImpl extends UserServiceImpl {
         private String id;
 
-        private TestUserService(String id) {
+        private TestUserServiceImpl(String id) {
             this.id = id;
         }
 
@@ -95,7 +98,7 @@ public class UserServiceTest {
         for(User user : users) userDao.add(user);
 
         MockMailSender mockMailSender = new MockMailSender();
-        userService.setMailSender(mockMailSender);
+        userServiceImpl.setMailSender(mockMailSender);
 
         userService.upgradeGrades();
 
@@ -140,15 +143,19 @@ public class UserServiceTest {
 
     @Test
     public void upgradeAllOrNothing() throws Exception {
-        UserService testUserService = new TestUserService(users.get(3).getId());
+        TestUserServiceImpl testUserService = new TestUserServiceImpl(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
-        testUserService.setTransactionManager(this.transactionManager);
         testUserService.setMailSender(this.mailSender);
+
+        UserServiceTx txUserSerivce = new UserServiceTx();
+        txUserSerivce.setTransactionManager(this.transactionManager);
+        txUserSerivce.setUserService(testUserService);
+
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try {
-            testUserService.upgradeGrades();
+            txUserSerivce.upgradeGrades();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
 
