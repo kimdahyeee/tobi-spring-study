@@ -5,15 +5,21 @@ import java.lang.reflect.Method;
 
 public class UppercaseHandler implements InvocationHandler {
 
-    Hello target;
+    Object target;
 
-    public UppercaseHandler(Hello target) {
+    // 어떤 종류의 인터페이스를 구현한 타겟에도 적용 가능하도록 Object타입으로 수정
+    public UppercaseHandler(Object target) {
         this.target = target;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String ret = (String) method.invoke(target, args);
+        Object ret = method.invoke(target, args);
 
-        return ret.toUpperCase();
+        //String 인 경우에만 대문자 변경하도록
+        if(ret instanceof String) {
+            return ((String)ret).toUpperCase();
+        } else {
+            return ret;
+        }
     }
 }
