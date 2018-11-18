@@ -1,4 +1,4 @@
-package lerningtest.template;
+package learningtest.template;
 
 import com.dahye.learningtest.template.Calculator;
 import org.junit.Before;
