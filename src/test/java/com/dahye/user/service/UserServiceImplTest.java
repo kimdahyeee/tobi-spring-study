@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -191,15 +192,18 @@ public class UserServiceImplTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(this.mailSender);
 
-        UserServiceTx txUserSerivce = new UserServiceTx();
-        txUserSerivce.setTransactionManager(this.transactionManager);
-        txUserSerivce.setUserService(testUserService);
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeGrades");
+        UserService txUserService = (UserService) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class[] {UserService.class}, txHandler);
 
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try {
-            txUserSerivce.upgradeGrades();
+            txUserService.upgradeGrades();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
 
