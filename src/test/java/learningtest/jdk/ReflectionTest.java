@@ -21,7 +21,7 @@ public class ReflectionTest {
         //charAt()
         assertThat(name.charAt(0), is('s'));
 
-        Method charAtMethod = String.class.getMethod("char`At", int.class);
+        Method charAtMethod = String.class.getMethod("charAt", int.class);
         assertThat((Character)charAtMethod.invoke(name, 0), is('s'));
 
     }

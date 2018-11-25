@@ -14,9 +14,11 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="userService" class="com.dahye.user.service.UserServiceTx">
-        <property name="userService" ref="userServiceImpl" />
+    <bean id="userService" class="com.dahye.user.service.TxProxyFactoryBean">
+        <property name="target" ref="userServiceImpl" />
         <property name="transactionManager" ref="transactionManager" />
+        <property name="pattern" value="upgradeGrades" />
+        <property name="serviceInterface" value="com.dahye.user.service.UserService" />
     </bean>
 
     <bean id="userServiceImpl" class="com.dahye.user.service.UserServiceImpl">
