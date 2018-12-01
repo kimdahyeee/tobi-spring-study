@@ -1,7 +1,5 @@
 package learningtest.jdk.proxy;
 
-import com.dahye.learningtest.proxy.Hello;
-import com.dahye.learningtest.proxy.HelloTarget;
 import com.dahye.learningtest.proxy.HelloUppercase;
 import com.dahye.learningtest.proxy.UppercaseHandler;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -104,5 +102,4 @@ public class ProxyTest {
             return "Thank You " + name;
         }
     }
-
 }
