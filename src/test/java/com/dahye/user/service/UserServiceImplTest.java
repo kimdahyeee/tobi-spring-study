@@ -36,9 +36,6 @@ public class UserServiceImplTest {
     UserService userService;
 
     @Autowired
-    UserDao userDao;
-
-    @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
@@ -159,7 +156,7 @@ public class UserServiceImplTest {
     }
 
     private void checkGradeUpgrade(User user, boolean changed) {
-        User userUpdate = userDao.get(user.getId());
+        User userUpdate = userService.get(user.getId());
         if (changed) {
             assertThat(userUpdate.getGrade(), is(user.getGrade().nextGrade()));
         } else {
@@ -169,7 +166,7 @@ public class UserServiceImplTest {
 
     @Test
     public void add() {
-        userDao.deleteAll();
+        userService.deleteAll();
 
         User userWithGrade = users.get(4);
         User userWithoutGrade = users.get(0);
@@ -178,8 +175,8 @@ public class UserServiceImplTest {
         userService.add(userWithGrade);
         userService.add(userWithoutGrade);
 
-        User userWithGradeRead = userDao.get(userWithGrade.getId());
-        User userWithoutGradeRead = userDao.get(userWithoutGrade.getId());
+        User userWithGradeRead = userService.get(userWithGrade.getId());
+        User userWithoutGradeRead = userService.get(userWithoutGrade.getId());
 
         assertThat(userWithGradeRead.getGrade(), is(userWithGrade.getGrade()));
         assertThat(userWithoutGradeRead.getGrade(), is(Grade.BASIC));
@@ -188,8 +185,8 @@ public class UserServiceImplTest {
     @Test
     public void upgradeAllOrNothing() throws Exception {
 
-        userDao.deleteAll();
-        for(User user : users) userDao.add(user);
+        userService.deleteAll();
+        for(User user : users) userService.add(user);
 
         try {
             testUserService.upgradeGrades();

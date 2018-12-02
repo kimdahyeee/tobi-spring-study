@@ -11,8 +11,7 @@
                            http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
     <aop:config>
-        <aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..))" />
-        <aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut" />
+        <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..))" />
     </aop:config>
 
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
