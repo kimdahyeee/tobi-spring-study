@@ -202,6 +202,11 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void advisorAutoProxyCreator() {
+        assertThat(testUserService, is(java.lang.reflect.Proxy.class));
+    }
+
+    @Test
     public void mockUpgradeGrades() throws Exception {
         UserServiceImpl userServiceImpl = new UserServiceImpl();
 
