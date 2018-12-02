@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,9 +36,6 @@ public class UserServiceImplTest {
     UserService userService;
 
     @Autowired
-    UserServiceImpl userServiceImpl;
-
-    @Autowired
     UserDao userDao;
 
     @Autowired
@@ -54,12 +49,11 @@ public class UserServiceImplTest {
     @Autowired
     ApplicationContext context;
 
-    static class TestUserServiceImpl extends UserServiceImpl {
-        private String id;
+    @Autowired
+    UserService testUserService;
 
-        private TestUserServiceImpl(String id) {
-            this.id = id;
-        }
+    static class TestUserServiceImpl extends UserServiceImpl {
+        private String id = "dahye4";
 
         protected void upgradeGrade(User user) {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
@@ -193,20 +187,12 @@ public class UserServiceImplTest {
 
     @Test
     public void upgradeAllOrNothing() throws Exception {
-        TestUserServiceImpl testUserService = new TestUserServiceImpl(users.get(3).getId());
-        testUserService.setUserDao(this.userDao);
-        testUserService.setMailSender(this.mailSender);
-
-        ProxyFactoryBean txProxyFactoryBean =
-                context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try {
-            txUserService.upgradeGrades();
+            testUserService.upgradeGrades();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
 
