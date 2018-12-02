@@ -56,6 +56,13 @@ public class UserServiceImplTest {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeGrade(user);
         }
+
+        public List<User> getAll() {
+            for(User user : super.getAll()) {
+                super.update(user);
+            }
+            return null;
+        }
     }
 
     static class TestUserServiceException extends RuntimeException {
@@ -228,5 +235,10 @@ public class UserServiceImplTest {
         List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
         assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
         assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
+    }
+
+    @Test
+    public void readOnlyTransactionAttribute() {
+        testUserService.getAll();
     }
 }
