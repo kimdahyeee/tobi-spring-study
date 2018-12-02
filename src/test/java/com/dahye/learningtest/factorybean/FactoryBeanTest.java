@@ -1,7 +1,5 @@
-package learningtest.factorybean;
+package com.dahye.learningtest.factorybean;
 
-import com.dahye.learningtest.factorybean.Message;
-import com.dahye.learningtest.factorybean.MessageFactoryBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

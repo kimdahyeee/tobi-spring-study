@@ -1,4 +1,4 @@
-package learningtest.jdk;
+package com.dahye.learningtest.jdk;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package learningtest.jdk.proxy;
+package com.dahye.learningtest.jdk.proxy;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

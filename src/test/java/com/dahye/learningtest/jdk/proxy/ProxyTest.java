@@ -1,4 +1,4 @@
-package learningtest.jdk.proxy;
+package com.dahye.learningtest.jdk.proxy;
 
 import com.dahye.learningtest.proxy.Hello;
 import com.dahye.learningtest.proxy.HelloTarget;
