@@ -39,8 +39,15 @@
         <property name="text" value="Factory bean" />
     </bean>
 
-    <bean id="transactionAdvice" class="com.dahye.learningtest.proxy.TransactionAdvice">
-        <property name="transactionManager" ref="transactionManager" />
+    <bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">PROPAGATION_REQUIRED,readOnly,timeout_30</prop>
+                <prop key="upgrade*">PROPAGATION_REQUIRES_NEW,ISOLATION_SERIALIZABLE</prop>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
     </bean>
 
     <!--등록된 빈 중에서 advisor 인터페이스를 구현한 것을 모두 찾는다-->
