@@ -1,2 +1,2 @@
 # toby-spring-study
-tobi-spring-study
+toby-spring-study
