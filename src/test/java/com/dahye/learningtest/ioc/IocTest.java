@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,6 +45,30 @@ public class IocTest {
         helloDef.getPropertyValues().add("printer", new RuntimeBeanReference("printer"));
 
         ac.registerBeanDefinition("hello", helloDef);
+
+        Hello hello = ac.getBean("hello", Hello.class);
+        hello.print();
+
+        assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void genericApplicationContext() {
+        GenericApplicationContext ac = new GenericApplicationContext();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(ac);
+        reader.loadBeanDefinitions("file:src/main/resources/ioc-test.xml");
+
+        ac.refresh();
+
+        Hello hello = ac.getBean("hello", Hello.class);
+        hello.print();
+
+        assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void genericXmlApplicationContext() {
+        GenericXmlApplicationContext ac = new GenericXmlApplicationContext("file:src/main/resources/ioc-test.xml");
 
         Hello hello = ac.getBean("hello", Hello.class);
         hello.print();
