@@ -5,6 +5,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -56,7 +57,7 @@ public class IocTest {
     public void genericApplicationContext() {
         GenericApplicationContext ac = new GenericApplicationContext();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(ac);
-        reader.loadBeanDefinitions("file:src/main/resources/ioc-test.xml");
+        reader.loadBeanDefinitions("file:src/test/resources/learningtest/ioc/ioc-test.xml");
 
         ac.refresh();
 
@@ -68,11 +69,30 @@ public class IocTest {
 
     @Test
     public void genericXmlApplicationContext() {
-        GenericXmlApplicationContext ac = new GenericXmlApplicationContext("file:src/main/resources/ioc-test.xml");
+        GenericXmlApplicationContext ac = new GenericXmlApplicationContext("file:src/test/resources/learningtest/ioc/ioc-test.xml");
 
         Hello hello = ac.getBean("hello", Hello.class);
         hello.print();
 
         assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void parentAndChildApplicationContext() {
+        ApplicationContext parent = new GenericXmlApplicationContext("file:src/test/resources/learningtest/ioc/parentContext.xml");
+        GenericApplicationContext child = new GenericApplicationContext(parent);
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(child);
+        reader.loadBeanDefinitions("file:src/test/resources/learningtest/ioc/childContext.xml");
+        child.refresh();
+
+        //부모 컨텍스트에 있는 printer를 가져옴을 확인하는 test
+        Printer printer = child.getBean("printer", Printer.class);
+        assertThat(printer, is(notNullValue()));
+
+        Hello hello = child.getBean("hello", Hello.class);
+        assertThat(hello, is(notNullValue()));
+
+        hello.print();
+        assertThat(printer.toString(), is("Hello Child"));
     }
 }
